@@ -1,17 +1,23 @@
 import React from "react";
-import { Button, Form } from "react-bootstrap";
-import "./Login.css";
+import { Form } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import "./SignUp.css";
 
-const Login = () => {
+const SignUp = () => {
   return (
-    <div className="login">
+    <div className="signup">
       <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="login_form d-flex flex-column align-items-center">
+        <div className="signup_form d-flex flex-column align-items-center">
           <div className="">
-            <h3>Login</h3>
+            <h3>Sign Up</h3>
           </div>
           <Form className="mt-3 mb-3 w-100">
+            <Form.Group className="mb-3" controlId="formBasicName">
+              <Form.Label>Name</Form.Label>
+              <Form.Control type="text" placeholder="Enter name" />
+            </Form.Group>
+
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control type="email" placeholder="Enter email" />
@@ -29,9 +35,9 @@ const Login = () => {
             </Button>
           </Form>
           <div className="mt-1">
-            New on our platform?{" "}
-            <Link className="linkText" to="/singup">
-              Create an account
+            Already have an account?{" "}
+            <Link className="linkText" to="/login">
+              Login
             </Link>
           </div>
           <div className="m-2">
@@ -48,4 +54,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;

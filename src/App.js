@@ -8,6 +8,7 @@ import Login from "./components/Login/Login";
 import WithoutNav from "./components/WithoutNav/WithoutNav";
 import WithNav from "./components/WithNav/WithNav";
 import SignUp from "./components/SignUp/SignUp";
+import Users from "./components/Users/Users";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="contact" element={<Contact />} />
             <Route path="about" element={<About />} />
+            <Route path="users" element={<Users />} />
           </Route>
           <Route element={<WithoutNav />}>
             <Route path="/login" element={<Login />} />

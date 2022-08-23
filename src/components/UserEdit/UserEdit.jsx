@@ -6,58 +6,42 @@ import useInput from "../../Hooks/userInput";
 import { MutatingDots } from "react-loader-spinner";
 
 const UserEdit = () => {
-  const [allData, setAllData] = useState(null);
-  const [user, setUser] = useState("");
-  const [userId, setUserId] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
-  const [loginId, setLoginId] = useState("");
-  const [loginTime, setLoginTime] = useState("");
-  const [address1, setAddress1] = useState("");
-  const [address2, setAddress2] = useState("");
-  const [accountCreateTime, setAccountCreateTime] = useState("");
-  const [dob, setDob] = useState("");
-  const [status, setStatus] = useState("");
-  const [phone, setPhone] = useState("");
-
   const [isLoaded, setIsLoaded] = useState(false);
   const { id } = useParams();
+  const [user, setUser] = useState([]);
+  const [allData, setAllData] = useState({
+    id: "",
+    name: "",
+    email: "",
+    password: "",
+    role: "",
+    loginId: "",
+    loginTime: "",
+    address1: "",
+    address2: "",
+    accountCreateTime: "",
+    dob: "",
+    status: "",
+    phone: "",
+  });
+
+  const handelChange = (e) => {
+    setAllData({
+      ...allData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log(
-      name,
-      email,
-      password,
-      role,
-      loginId,
-      loginTime,
-      address1,
-      address2,
-      accountCreateTime,
-      dob,
-      status,
-      phone,
-      userId
-    );
-
-    const { data: response } = await service.put(`/user/edit`, {
-      Id: userId,
-      Phone: phone,
-      DOB: dob,
-      Address1: address1,
-      Address2: address2,
-      Status: status,
-      AccountCreateTime: accountCreateTime,
-      LoginTime: loginTime,
-      LoginId: loginId,
-      Name: name,
-      Email: email,
-      Password: password,
-      Role: role,
+    const value = e.target.value;
+    setAllData({
+      ...allData,
+      [e.target.name]: value,
     });
+    console.log("All Data: ", allData);
+
+    const { data: response } = await service.put(`/user/edit`, allData);
     console.log(response);
   };
 
@@ -66,23 +50,23 @@ const UserEdit = () => {
       try {
         const { data: response } = await service.get(`/user/${id}`);
         setUser(response);
-
-        setUserId(response.Id);
-        setName(response.Name);
-        setEmail(response.Email);
-        setPassword(response.Password);
-        setRole(response.Role);
-        setLoginId(response.LoginId);
-        setLoginTime(response.LoginTime);
-        setAddress1(response.Address1);
-        setAddress2(response.Address2);
-        setDob(response.DOB);
-        setStatus(response.Status);
-        setAccountCreateTime(response.AccountCreateTime);
-        setPhone(response.Phone);
-
+        setAllData({
+          id: response.Id,
+          name: response.Name,
+          email: response.Email,
+          password: response.Password,
+          role: response.Role,
+          loginId: response.LoginId,
+          loginTime: response.LoginTime,
+          address1: response.Address1,
+          address2: response.Address2,
+          accountCreateTime: response.AccountCreateTime,
+          dob: response.DOB,
+          status: response.Status,
+          phone: response.Phone,
+        });
         setIsLoaded(true);
-        console.table(response);
+        console.log(response);
       } catch (error) {
         console.log(error);
       }
@@ -115,96 +99,84 @@ const UserEdit = () => {
               <div>{"Profile"}</div>
               <div></div>
             </div>
-            <div className="d-flex  w-100">
-              <div className="w-75 me-15">
-                <div className="pt-2 pb-2 ps-2 pe-2">
-                  <Form.Label>Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    defaultValue={user.Name}
-                    onChange={(e) =>
-                      setName((v) => ({ ...v, name: e.target.value }))
-                    }
-                  />
+            <Form className="w-100" onSubmit={handleFormSubmit}>
+              <div className="d-flex  w-100">
+                <div className="w-75 me-15">
+                  <div className="pt-2 pb-2 ps-2 pe-2">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name"
+                      defaultValue={user.Name}
+                      onChange={handelChange}
+                    />
+                  </div>
+                  <div className="pt-2 pb-2 ps-2 pe-2">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control
+                      defaultValue={user.Email}
+                      type="email"
+                      name="email"
+                      placeholder=""
+                      onChange={handelChange}
+                    />
+                  </div>
+                  <div className="pt-2 pb-2 ps-2 pe-2">
+                    <Form.Label>Present Address</Form.Label>
+                    <Form.Control
+                      defaultValue={user.Address1}
+                      type="text"
+                      placeholder=""
+                      name="address1"
+                      onChange={handelChange}
+                    />
+                  </div>
+                  <div className="pt-2 pb-2 ps-2 pe-2">
+                    <Form.Label>Date of Birth</Form.Label>
+                    <Form.Control
+                      defaultValue={user.DOB}
+                      type="text"
+                      placeholder=""
+                      name="dob"
+                      onChange={handelChange}
+                    />
+                  </div>
                 </div>
-                <div className="pt-2 pb-2 ps-2 pe-2">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    defaultValue={user.Email}
-                    type="email"
-                    name="email"
-                    placeholder=""
-                    onChange={(e) =>
-                      setEmail((v) => ({ ...v, email: e.target.value }))
-                    }
-                  />
-                </div>
-                <div className="pt-2 pb-2 ps-2 pe-2">
-                  <Form.Label>Present Address</Form.Label>
-                  <Form.Control
-                    defaultValue={user.Address1}
-                    type="text"
-                    placeholder=""
-                    name="address1"
-                    onChange={(e) =>
-                      setAddress1((v) => ({ ...v, address1: e.target.value }))
-                    }
-                  />
-                </div>
-                <div className="pt-2 pb-2 ps-2 pe-2">
-                  <Form.Label>Date of Birth</Form.Label>
-                  <Form.Control
-                    defaultValue={user.DOB}
-                    type="text"
-                    placeholder=""
-                    name="dob"
-                    onChange={(e) =>
-                      setDob((v) => ({ ...v, dob: e.target.value }))
-                    }
-                  />
-                </div>
-              </div>
 
-              <div className=" w-75 ">
-                <div className="pt-2 pb-2 ps-2 pe-2">
-                  <Form.Label>Role</Form.Label>
-                  <Form.Control
-                    defaultValue={user.Role}
-                    type="text"
-                    placeholder=""
-                    name="role"
-                    onChange={(e) =>
-                      setRole((v) => ({ ...v, role: e.target.value }))
-                    }
-                  />
-                </div>
-                <div className="pt-2 pb-2 ps-2 pe-2">
-                  <Form.Label>Phone</Form.Label>
-                  <Form.Control
-                    defaultValue={user.Phone}
-                    type="text"
-                    placeholder=""
-                    name="phone"
-                    onChange={(e) =>
-                      setPhone((v) => ({ ...v, phone: e.target.value }))
-                    }
-                  />
-                </div>
-                <div className="pt-2 pb-2 ps-2 pe-2">
-                  <Form.Label>Permanent Address</Form.Label>
-                  <Form.Control
-                    defaultValue={user.Address2}
-                    type="text"
-                    placeholder=""
-                    name="address2"
-                    onChange={(e) =>
-                      setAddress2((v) => ({ ...v, address2: e.target.value }))
-                    }
-                  />
+                <div className=" w-75 ">
+                  <div className="pt-2 pb-2 ps-2 pe-2">
+                    <Form.Label>Role</Form.Label>
+                    <Form.Control
+                      defaultValue={user.Role}
+                      type="text"
+                      placeholder=""
+                      name="role"
+                      onChange={handelChange}
+                    />
+                  </div>
+                  <div className="pt-2 pb-2 ps-2 pe-2">
+                    <Form.Label>Phone</Form.Label>
+                    <Form.Control
+                      defaultValue={user.Phone}
+                      type="text"
+                      placeholder=""
+                      name="phone"
+                      onChange={handelChange}
+                    />
+                  </div>
+                  <div className="pt-2 pb-2 ps-2 pe-2">
+                    <Form.Label>Permanent Address</Form.Label>
+                    <Form.Control
+                      defaultValue={user.Address2}
+                      type="text"
+                      placeholder=""
+                      name="address2"
+                      onChange={handelChange}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            </Form>
             <div className="d-flex  justify-content-start">
               <div>
                 <Button onClick={handleFormSubmit}>Save</Button>

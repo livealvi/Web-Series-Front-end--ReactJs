@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import service from "../../api/service";
-import useInput from "../../Hooks/userInput";
 import { MutatingDots } from "react-loader-spinner";
 
 const UserEdit = () => {

@@ -6,26 +6,20 @@ import { MutatingDots } from "react-loader-spinner";
 import getToken from "../../services/getToken";
 import { toast } from "react-hot-toast";
 
-const UserEdit = () => {
+const VideoEdit = () => {
   let navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
   const { id } = useParams();
-  const [user, setUser] = useState([]);
+  const [video, setVideo] = useState([]);
   const [allData, setAllData] = useState({
     id: "",
-    name: "",
-    email: "",
-    password: "",
-    role: "",
-    loginId: "",
-    loginTime: "",
-    address1: "",
-    address2: "",
-    accountCreateTime: "",
-    dob: "",
+    videoTitle: "",
+    categoryId: "",
+    description: "",
     status: "",
-    phone: "",
-    password: "",
+    userName: "",
+    userId: "",
+    uploadDate: "",
   });
 
   const handelChange = (e) => {
@@ -42,39 +36,30 @@ const UserEdit = () => {
       ...allData,
       [e.target.name]: value,
     });
-    console.log("All Data: ", allData);
 
-    const { data: response } = await service.put(`/user/edit`, allData, {
+    const { data: response } = await service.put(`/video/edit`, allData, {
       headers: { Authorization: getToken() },
     });
     toast(response);
-
-    if (response === "User updated successfully") {
-      setTimeout(navigate("/users"), 1000);
-    }
+    navigate("/dashboard/manage/videos");
   };
 
   useEffect(() => {
     (async () => {
       try {
-        const { data: response } = await service.get(`/user/${id}`, {
+        const { data: response } = await service.get(`/video/${id}`, {
           headers: { Authorization: getToken() },
         });
-        setUser(response);
+        setVideo(response);
         setAllData({
           id: response.Id,
-          name: response.Name,
-          email: response.Email,
-          password: response.Password,
-          role: response.Role,
-          loginId: response.LoginId,
-          loginTime: response.LoginTime,
-          address1: response.Address1,
-          address2: response.Address2,
-          accountCreateTime: response.AccountCreateTime,
-          dob: response.DOB,
+          videoTitle: response.VideoTitle,
+          categoryId: response.CategoryId,
+          description: response.Description,
           status: response.Status,
-          phone: response.Phone,
+          userName: response.UserName,
+          userId: response.UserId,
+          uploadDate: response.UploadDate,
         });
         setIsLoaded(true);
         console.log(response);
@@ -102,8 +87,8 @@ const UserEdit = () => {
         />
       </div>
     );
-  if (user === null) navigate(`/login`);
-  if (!user)
+  if (video === null) navigate(`/login`); // null means error, redirect to login
+  if (!video)
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
         <MutatingDots
@@ -121,9 +106,9 @@ const UserEdit = () => {
     );
   return (
     <>
-      <div className="user_detail">
+      <div className="video_detail">
         <div className=" d-flex flex-column justify-content-center align-items-center vh-100">
-          <div className="user_detail_box d-flex flex-column align-items-center w-50">
+          <div className="video_detail_box d-flex flex-column align-items-center w-50">
             <div className=" d-flex justify-content-evenly">
               {" "}
               <div>{"Profile"}</div>
@@ -133,41 +118,42 @@ const UserEdit = () => {
               <div className="d-flex  w-100">
                 <div className="w-75 me-15">
                   <div className="pt-2 pb-2 ps-2 pe-2">
-                    <Form.Label>Name</Form.Label>
+                    <Form.Label>Video Name</Form.Label>
                     <Form.Control
                       type="text"
-                      name="name"
-                      defaultValue={user.Name}
+                      name="videoTitle"
+                      defaultValue={
+                        video.VideoTitle == null
+                          ? "Please Insert Data"
+                          : video.VideoTitle
+                      }
                       onChange={handelChange}
                     />
                   </div>
                   <div className="pt-2 pb-2 ps-2 pe-2">
-                    <Form.Label>Email</Form.Label>
+                    <Form.Label>Upload By</Form.Label>
                     <Form.Control
-                      defaultValue={user.Email}
-                      type="email"
-                      name="email"
-                      placeholder=""
+                      name="userName"
+                      type="text"
+                      readOnly
+                      value={
+                        video.UserName == null
+                          ? "Please Insert Data"
+                          : video.UserName
+                      }
                       onChange={handelChange}
                     />
                   </div>
                   <div className="pt-2 pb-2 ps-2 pe-2">
-                    <Form.Label>Present Address</Form.Label>
+                    <Form.Label>Status</Form.Label>
                     <Form.Control
-                      defaultValue={user.Address1}
+                      defaultValue={
+                        video.Status == null
+                          ? "Please Insert Data"
+                          : video.Status
+                      }
                       type="text"
-                      name="address1"
-                      onChange={handelChange}
-                    />
-                  </div>
-                  <div className="pt-2 pb-2 ps-2 pe-2">
-                    <Form.Label>Date of Birth</Form.Label>
-
-                    <Form.Control
-                      defaultValue={user.DOB}
-                      type="text"
-                      placeholder=""
-                      name="dob"
+                      name="status"
                       onChange={handelChange}
                     />
                   </div>
@@ -175,42 +161,58 @@ const UserEdit = () => {
 
                 <div className=" w-75 ">
                   <div className="pt-2 pb-2 ps-2 pe-2">
-                    <Form.Label>Role</Form.Label>
+                    <Form.Label>Upload Date</Form.Label>
                     <Form.Control
-                      defaultValue={user.Role}
+                      defaultValue={
+                        video.UploadDate == null
+                          ? "Please Insert Data"
+                          : video.UploadDate
+                      }
                       type="text"
                       placeholder=""
-                      name="role"
+                      name="uploadDate"
                       onChange={handelChange}
                     />
                   </div>
                   <div className="pt-2 pb-2 ps-2 pe-2">
-                    <Form.Label>Phone</Form.Label>
+                    <Form.Label>Description</Form.Label>
                     <Form.Control
-                      defaultValue={user.Phone}
+                      defaultValue={
+                        video.Description == null
+                          ? "Please Insert Data"
+                          : video.Description
+                      }
                       type="text"
                       placeholder=""
-                      name="phone"
+                      name="description"
                       onChange={handelChange}
                     />
                   </div>
                   <div className="pt-2 pb-2 ps-2 pe-2">
-                    <Form.Label>Permanent Address</Form.Label>
+                    <Form.Label>Category</Form.Label>
                     <Form.Control
-                      defaultValue={user.Address2}
+                      readOnly
+                      name="categoryName"
+                      defaultValue={
+                        video.CategoryName == null
+                          ? "Please Insert Data"
+                          : video.CategoryName
+                      }
                       type="text"
                       placeholder=""
-                      name="address2"
                       onChange={handelChange}
                     />
                   </div>
                   <div className="pt-2 pb-2 ps-2 pe-2">
-                    <Form.Label>Password</Form.Label>
+                    <Form.Label>Category Id</Form.Label>
                     <Form.Control
-                      defaultValue={user.Password}
+                      name="categoryId"
                       type="text"
-                      placeholder=""
-                      name="password"
+                      value={
+                        video.CategoryId == null
+                          ? "Please Insert Data"
+                          : video.CategoryId
+                      }
                       onChange={handelChange}
                     />
                   </div>
@@ -229,4 +231,4 @@ const UserEdit = () => {
   );
 };
 
-export default UserEdit;
+export default VideoEdit;

@@ -1,43 +1,47 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Table } from "react-bootstrap";
-import { MutatingDots } from "react-loader-spinner";
-import axios from "axios";
-import UserTable from "../UserTable/UserTable";
-import getToken from "../../services/getToken";
 import { useNavigate } from "react-router-dom";
-import service from "../../Hooks/service";
-import useAuth from "../../Hooks/useAuth";
+import useAuth from "../../../Hooks/useAuth";
+import getToken from "../../../services/getToken";
+import { MutatingDots } from "react-loader-spinner";
+import service from "../../../Hooks/service";
+import axios from "axios";
+import VideoTable from "../../VideoTable/VideoTable";
 import { toast } from "react-hot-toast";
 
-const Users = () => {
-  const [allUsers, setaAllUsers] = useState([]);
+const VideoDashboard = () => {
+  const [allVideos, setAllVideos] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [reloader, setReloader] = useState(0);
   let navigate = useNavigate();
   const { user } = useAuth();
 
   useEffect(() => {
+    console.log("getToken: ", getToken());
     axios
-      .get("http://localhost:44314/api/users", {
+      .get("http://localhost:44314/api/videos", {
         headers: { Authorization: getToken() },
       })
       .then((resp) => {
-        setaAllUsers(() => resp.data);
+        console.log(resp.data);
+        setAllVideos(() => resp.data);
         setIsLoaded(true);
       })
       .catch((err) => {
-        console.log(err);
-        toast(err);
-        if (err.response.status === 401) {
-          navigate("/login");
+        if (err.response.status == 401) {
+          navigate("/page-not-found-404");
         }
+        console.log("message: ", err.response.status);
+        console.log(err);
       });
   }, [reloader]);
 
-  const handleDeleteUser = async (id) => {
-    const { data: response } = await service.delete(`user/remove/${id}`, {
+  const handleDeleteVideo = async (id) => {
+    console.log(id);
+    const { data: response } = await service.delete(`video/remove/${id}`, {
       headers: { Authorization: getToken() },
     });
+    console.log(response);
     setReloader((v) => v + 1);
     toast(response);
   };
@@ -58,25 +62,8 @@ const Users = () => {
         />
       </div>
     );
-
-  if (user === null) navigate(`/login`);
-  if (!user)
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <MutatingDots
-          height="100"
-          width="100"
-          color="#4fa94d"
-          secondaryColor="#4fa94d"
-          radius="12.5"
-          ariaLabel="mutating-dots-loading"
-          wrapperStyle={{}}
-          wrapperClass=""
-          visible={true}
-        />
-      </div>
-    );
-
+  if (user === null) navigate(`/login`); // null means error, redirect to login
+  if (!user) return <h1>Loading....</h1>;
   return (
     <>
       <Container>
@@ -86,22 +73,23 @@ const Users = () => {
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
+                  <th>Category</th>
+                  <th>Video Name</th>
+                  <th>Description</th>
                   <th>Status</th>
-                  <th>Role</th>
+                  <th>Upload By.</th>
+                  <th>Upload Date</th>
                   <th className="text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {allUsers.map((user, index) => (
+                {allVideos.map((video, index) => (
                   <tr key={index}>
-                    <UserTable
+                    <VideoTable
                       count={index}
-                      userTable={user}
-                      handleDeleteUser={handleDeleteUser}
-                    ></UserTable>
+                      videoTable={video}
+                      handleDeleteVideo={handleDeleteVideo}
+                    ></VideoTable>
                   </tr>
                 ))}
               </tbody>
@@ -113,4 +101,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default VideoDashboard;

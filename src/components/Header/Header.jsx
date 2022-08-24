@@ -1,10 +1,28 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Header.css";
-import { Container, Nav, Navbar } from "react-bootstrap";
+import { Button, Container, Nav, Navbar } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import getToken from "../../services/getToken";
+import { toast } from "react-hot-toast";
+import service from "../../Hooks/service";
 
 const Header = () => {
+  let navigate = useNavigate();
+
+  const handleLogout = async () => {
+    localStorage.removeItem("token");
+    const { data: response } = await service.put(`logout`, {
+      headers: { Authorization: getToken() },
+    });
+    setTimeout(navigate("/login"), 1000);
+    console.log("logout:", response);
+    toast(response);
+    if (response === "User logout successfully") {
+      setTimeout(navigate("/login"), 1500);
+    }
+  };
+
   return (
     <>
       <Navbar
@@ -15,7 +33,7 @@ const Header = () => {
         className="w-100"
       >
         <Container>
-          <Link className="brand text-white" to="/">
+          <Link className="brand text-white" to="/dashboard">
             Web Series
           </Link>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -38,9 +56,15 @@ const Header = () => {
             </Nav>
             <Nav>
               <div className="">
-                <Link className="nav_bar text-white " to="/login">
-                  Login
-                </Link>
+                {getToken() ? (
+                  <Button className="nav_bar text-white" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                ) : (
+                  <Link className="nav_bar text-white " to="/login">
+                    Login
+                  </Link>
+                )}
               </div>
               {/* <button
                 onClick={() => {

@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import "./Login.css";
-import { Link } from "react-router-dom";
-import service from "../../api/service";
+import { Link, useNavigate } from "react-router-dom";
+import service from "../../Hooks/service";
+import useAuth from "../../Hooks/useAuth";
+import { MutatingDots } from "react-loader-spinner";
+import { toast } from "react-hot-toast";
 
 // const initialState = {
 //   loading: false,
@@ -34,16 +37,18 @@ const Login = () => {
   // const [state, dispatch] = useReducer(reducer, initialState);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [resp, setResp] = useState("");
+  const [resp, setResp] = useState([]);
+  let navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const { data: response } = await service.post("/login", {
         email,
         password,
       });
+      localStorage.setItem("token", response.TokenData);
       // .then((ma) => {
       //   dispatch({
       //     type: "SUCCESS",
@@ -56,11 +61,38 @@ const Login = () => {
       //   });
       // });
       setResp(response);
+      if (response == "Please provide valid credentials") {
+        return toast("Please provide valid credentials");
+      } else {
+        toast("Login successful, redirect");
+        navigate("/dashboard");
+      }
     } catch (error) {
-      console.log(error);
       setResp(error);
     }
   };
+
+  if (user === undefined)
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <MutatingDots
+          height="100"
+          width="100"
+          color="#4fa94d"
+          secondaryColor="#4fa94d"
+          radius="12.5"
+          ariaLabel="mutating-dots-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+        />
+      </div>
+    );
+  if (!!user && user.Role === "VideoManager")
+    navigate(`/dashboard/manage/videos`);
+  if (!!user && user.Role === "Admin") navigate(`/users`);
+
+  //if (user === null) navigate(`/login`);
 
   return (
     <div className="login">
@@ -69,10 +101,8 @@ const Login = () => {
           <div className="">
             <h3>Login</h3>
           </div>
-          <Form className="mt-3 mb-3 w-100">
-            <div className="text-center" style={{ color: "red" }}>
-              {resp}
-            </div>
+          <Form onSubmit={handleLoginSubmit} className="mt-3 mb-3 w-100">
+            <div className="text-center" style={{ color: "red" }}></div>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control

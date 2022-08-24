@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./SignUp.css";
 import useInput from "../../Hooks/userInput";
-import service from "../../api/service";
+import service from "../../Hooks/service";
 
 const SignUp = () => {
   const nameIc = useInput("");
